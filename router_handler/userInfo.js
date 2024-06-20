@@ -55,3 +55,18 @@ exports.updatePassword = (req, res) => {
     });
   });
 };
+
+// 更新用户头像
+exports.updateAvatar = (req, res) => {
+  const { id } = req.auth;
+  const { avatar } = req.body;
+  const sql = `update ev_users set avatar = ? where id = ?`;
+  db.query(sql, [avatar, id], (err, results) => {
+    if (err) return res.cc(err);
+    if (results.affectedRows === 0) return res.cc("更新头像失败");
+    res.send({
+      status: 0,
+      msg: "更新头像成功",
+    });
+  });
+};
