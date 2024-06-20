@@ -25,3 +25,12 @@ exports.update_userinfo_schema = {
     email,
   },
 };
+
+// 验证规则对象 - 重置密码
+exports.update_password_schema = {
+  body: {
+    oldPwd: password,
+    // 使用password这个规则，验证req.body.newPwd的值
+    newPwd: joi.not(joi.ref("oldPwd")).concat(password),
+  },
+};

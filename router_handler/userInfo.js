@@ -1,4 +1,5 @@
 const db = require("../db/index");
+const bcrypt = require("bcryptjs");
 
 // 获取用户信息
 exports.getUserInfo = (req, res) => {
@@ -26,6 +27,31 @@ exports.updateUserInfo = (req, res) => {
     res.send({
       status: 0,
       msg: "更新用户信息成功",
+    });
+  });
+};
+
+// 更新用户密码
+exports.updatePassword = (req, res) => {
+  const { id } = req.auth;
+  const { oldPwd, newPwd } = req.body;
+  const sql = `select * from ev_users where id = ?`;
+  db.query(sql, id, (err, results) => {
+    if (err) return res.cc(err);
+    if (results.length === 0) return res.cc("用户不存在");
+    const user = results[0];
+    const isValid = bcrypt.compareSync(oldPwd, user.password);
+    if (!isValid) return res.cc("原密码错误");
+    const salt = bcrypt.genSaltSync(10);
+    const pwd = bcrypt.hashSync(newPwd, salt);
+    const sql = `update ev_users set password = ? where id = ?`;
+    db.query(sql, [pwd, id], (err, results) => {
+      if (err) return res.cc(err);
+      if (results.affectedRows === 0) return res.cc("更新密码失败");
+      res.send({
+        status: 0,
+        msg: "更新密码成功",
+      });
     });
   });
 };
