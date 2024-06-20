@@ -32,6 +32,9 @@ app.use(
 const userRouter = require("./router/user");
 app.use("/api", userRouter);
 
+const userInfoRouter = require("./router/userInfo");
+app.use("/my", userInfoRouter);
+
 app.get("/", (req, res) => {
   res.send("Hello World");
 });
