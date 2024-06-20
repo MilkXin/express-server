@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const joi = require("joi");
+const { expressjwt: jwt } = require("express-jwt");
+const config = require("./config");
 
 const app = express();
 const port = 3007;
@@ -20,6 +22,13 @@ app.use((req, res, next) => {
   next();
 });
 
+// 路由之前，解析token, unless放行不需要验证的路由
+app.use(
+  jwt({ secret: config.jwtSecretKey, algorithms: ["HS256"] }).unless({
+    path: [/^\/api\//],
+  })
+);
+
 const userRouter = require("./router/user");
 app.use("/api", userRouter);
 
@@ -31,6 +40,8 @@ app.get("/", (req, res) => {
 app.use((err, req, res, next) => {
   // 字段验证失败
   if (err instanceof joi.ValidationError) return res.cc(err);
+  //身份认证失败
+  if (err.name === "UnauthorizedError") return res.cc("身份认证失败");
   // 其他错误
   res.cc(err);
 });

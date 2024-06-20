@@ -1,5 +1,7 @@
 const db = require("../db/index");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const config = require("../config");
 
 // 注册
 // 1. 获取用户提交的数据
@@ -73,11 +75,17 @@ exports.login = (req, res) => {
         return res.cc("密码错误");
       }
 
-      // 登录成功
+      // 生成 Token 字符串
+      const user = { ...results[0], password: undefined, avatar: undefined };
+      const tokenStr = jwt.sign(user, config.jwtSecretKey, {
+        expiresIn: config.expiresIn,
+      });
+
+      // 将 token 字符串作为 token 响应给客户端
       res.send({
         status: 0,
         msg: "登录成功",
-        username,
+        token: `Bearer ${tokenStr}`,
       });
     }
   );
