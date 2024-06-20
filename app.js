@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const joi = require("joi");
 
 const app = express();
 const port = 3007;
@@ -24,6 +25,14 @@ app.use("/api", userRouter);
 
 app.get("/", (req, res) => {
   res.send("Hello World");
+});
+
+// 错误中间件
+app.use((err, req, res, next) => {
+  // 字段验证失败
+  if (err instanceof joi.ValidationError) return res.cc(err);
+  // 其他错误
+  res.cc(err);
 });
 
 app.listen(port, () => {

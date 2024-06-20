@@ -11,10 +11,11 @@ const bcrypt = require("bcryptjs");
 
 exports.register = (req, res) => {
   const { username, password } = req.body;
-  if (!username || !password) {
-    // res.send({ status: 1, msg: "用户名或密码不能为空" });
-    return res.cc("用户名或密码不能为空");
-  }
+  // 验证数据的合法性, 移动到路由中间件里使用 joi 验证
+  // if (!username || !password) {
+  //   // res.send({ status: 1, msg: "用户名或密码不能为空" });
+  //   return res.cc("用户名或密码不能为空");
+  // }
 
   db.query(
     "select * from ev_users where username = ?",
@@ -52,9 +53,9 @@ exports.register = (req, res) => {
 
 exports.login = (req, res) => {
   const { username, password } = req.body;
-  if (!username || !password) {
-    return res.cc("用户名或密码不能为空");
-  }
+  // if (!username || !password) {
+  //   return res.cc("用户名或密码不能为空");
+  // }
 
   db.query(
     "select * from ev_users where username = ?",
