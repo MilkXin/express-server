@@ -8,6 +8,17 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+// 路由之前，封装res.cc函数
+app.use((req, res, next) => {
+  res.cc = (err, status = 1) => {
+    res.send({
+      status,
+      message: err instanceof Error ? err.message : err,
+    });
+  };
+  next();
+});
+
 const userRouter = require("./router/user");
 app.use("/api", userRouter);
 
